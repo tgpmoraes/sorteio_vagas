@@ -136,7 +136,7 @@ for key, lists in l:
     torre = torres[key[0]]
     for item in lists:
         unidade = str(key)[1:]
-        vaga = str(item) + (' - 1 SS' if item <= 256 else ' - 2 SS')
+        vaga = str(item) + (' - 2 SS' if item <= 256 else ' - 1 SS')
         pt.add_row([torre,unidade,vaga])
 lines = pt.get_string()
 

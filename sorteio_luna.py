@@ -5,14 +5,19 @@ from pprint import pprint
 from prettytable import PrettyTable
 from reportlab.pdfgen import canvas
 from reportlab.lib.units import inch,cm
+#from humanfriendly.tables import format_table_pretty
+from reportlab.lib import colors
+from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Spacer, Table, TableStyle
 
-if len(sys.argv) < 2:
-    print("Entre com o nome do arquivo de saida.")
+if len(sys.argv) < 5:
+    print("Entre com o tres arquivos de entrada e o arquivo de saida.")
     exit(1)
 
-bloq = json.load(open("/home/tiago/Documents/python/vagas/torre_vaga_bloqueada.json"))
-nbloq = json.load(open("/home/tiago/Documents/python/vagas/torre_vaga_nao_bloqueada.json"))
-ap_qtvaga = json.load(open("/home/tiago/Documents/python/vagas/ap_qtvaga.json"))
+bloq = json.load(open(sys.argv[2]))
+nbloq = json.load(open(sys.argv[3]))
+ap_qtvaga = json.load(open(sys.argv[4]))
 
 def sorteio_vagas(bloqueada,torre):
     if bloqueada:
@@ -128,18 +133,44 @@ for key, value in dict_sorteio.items():
 
 l = sorted(l, key = lambda x: x[0])
 
+doc = SimpleDocTemplate(sys.argv[1], pagesize=letter)
+
 pt = PrettyTable(["Bloco", "Unidade", "Vaga"])
 pt.align["Bloco"] = "l" # Alinhamento a esquerda
 pt.padding_width = 1 # One space between column edges and contents (default)
 
+aux = 0
+data = []
+data.append(["Bloco", "Unidade", "Vaga"])
 for key, lists in l:
     torre = torres[key[0]]
     for item in lists:
         unidade = str(key)[1:]
         vaga = str(item) + (' - 2 SS' if item <= 256 else ' - 1 SS')
-        pt.add_row([torre,unidade,vaga])
-lines = pt.get_string()
+        #pt.add_row([torre,unidade,vaga])
+        data.append([torre,unidade,vaga])
+#lines = pt.get_string()
 
+#print(lines)
+parts = []
+table = Table(data, [1.5 * inch, 1.5 * inch, inch])
+table_with_style = Table(data, [1.5 * inch, 1.5 * inch, inch], repeatRows=1)
+
+
+table_with_style.setStyle(TableStyle([
+    ('FONT', (0, 0), (-1, -1), 'Helvetica'),
+    ('FONT', (0, 0), (-1, 0), 'Helvetica-Bold'),
+    ('FONTSIZE', (0, 0), (-1, -1), 8),
+    ('INNERGRID', (0, 0), (-1, -1), 0.25, colors.black),
+    ('BOX', (0, 0), (-1, 0), 0.25, colors.green),
+    ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+]))
+
+#parts.append(table)
+#parts.append(Spacer(1, 0.5 * inch))
+parts.append(table_with_style)
+doc.build(parts)
+'''
 pw = canvas.Canvas(sys.argv[1])
 
 y = 11.0 * inch
@@ -160,7 +191,7 @@ for line in lines.split('\n'):
     y = y - dy
 pw.save() 
 
-'''
+
 with open(sys.argv[1],'wb') as file:
     for key, lists in l:
         torre = torres[key[0]]
@@ -169,7 +200,7 @@ with open(sys.argv[1],'wb') as file:
             file.write(bytes(row, 'utf-8'))
             file.write(bytes('\n', 'utf-8'))
 file.close()
-
+'''
 soma = 0
 for valida in dict_sorteio:
     for vaga in dict_sorteio[valida]:
@@ -179,4 +210,4 @@ print(soma)
 print(dict_sorteio)
 print(bloq)
 print(nbloq)
-'''
+

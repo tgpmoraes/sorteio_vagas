@@ -14,10 +14,15 @@ from reportlab.platypus import SimpleDocTemplate, Spacer, Table, TableStyle
 if len(sys.argv) < 5:
     print("Entre com o tres arquivos de entrada e o arquivo de saida.")
     exit(1)
+	
+# read file
+with open('C:/Users/t147580/Documents/GitHub/sorteio_vagas/ap_4vagas.json', 'r') as myfile:
+    data=myfile.read()	
 
 bloq = json.load(open(sys.argv[2]))
 nbloq = json.load(open(sys.argv[3]))
 ap_qtvaga = json.load(open(sys.argv[4]))
+ap_4vagas = json.loads(data)
 
 def sorteio_vagas(bloqueada,torre):
     if bloqueada:
@@ -64,6 +69,7 @@ def sorteio_vagas(bloqueada,torre):
     else:
         #Processo usado apenas para vagas nao bloqueadas
         vaga = random.sample(nbloq[torre],1)
+        #print(vaga)		
         if len(nbloq[torre]) > 0: nbloq[torre].remove(vaga[0])
     return vaga
   
@@ -94,13 +100,14 @@ def adiciona_vaga_bloq(ap,bloqueada):
 #adiciona vaga nao bloqueada ao ap
 def adiciona_vaga_nbloq(ap,bloqueada):
     vaga_sorteada = sorteio_vagas(bloqueada,ap[0])
-    #print(vaga_sorteada)
+    #print(bloqueada)
     dict_sorteio[ap].append(vaga_sorteada[0])
 
 #Loop para atribuir uma vaga nao bloqueada para todos os ap's que
 #tem 3 vagas    
 for k, v in ap_qtvaga.items(): 
     if v == 3:
+        #print(k)
         adiciona_vaga_nbloq(k,False)
 #Como o processo de adicionar a vaga para o apartamento seja
 #correto na hora de realizar o sorteio, e necessario retirar
@@ -128,6 +135,10 @@ torres = {'1':'Veneza','2':'Verona','3':'Vicenza','4':'Rovigo','5':'Siena','6':'
 
 l = []
 for key, value in dict_sorteio.items():
+    temp = (key, value)
+    l.append(temp)
+	
+for key, value in ap_4vagas.items():
     temp = (key, value)
     l.append(temp)
 

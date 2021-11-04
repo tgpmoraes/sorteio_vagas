@@ -16,7 +16,7 @@ if len(sys.argv) < 5:
     exit(1)
 	
 # read file
-with open('C:/Users/t147580/Documents/GitHub/sorteio_vagas/ap_4vagas.json', 'r') as myfile:
+with open('ap_4vagas.json', 'r') as myfile:
     data=myfile.read()	
 
 bloq = json.load(open(sys.argv[2]))
